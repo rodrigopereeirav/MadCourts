@@ -4,27 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MadCourts - Basket Madrid</title>
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; }
         #map { height: 100vh; width: 100%; }
         .info-panel { 
             position: absolute; top: 15px; left: 50px; z-index: 1000; 
-            background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 280px;
-        }
-        .btn-voy {
-            background-color: #ff6600; color: white; border: none;
-            padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;
+            background: white; padding: 15px; border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
 
     <div class="info-panel">
-        <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
-        <p>Encuentra tu cancha en Madrid y marca tu asistencia.</p>
+        <h2 style="margin:0">🏀 MadCourts</h2>
+        <p>Canchas en el sistema: <span id="contador">Cargando...</span></p>
     </div>
 
     <div id="map"></div>
@@ -33,51 +28,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // Inicializamos el mapa centrado en Madrid
+        // 1. Mapa
         var map = L.map('map').setView([40.4167, -3.7037], 12);
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        // Función para limpiar esas coordenadas raras con muchos puntos
-        function limpiarCoordenada(txt) {
+        // 2. Función de limpieza ultra-segura
+        function limpiar(txt) {
             if (!txt) return null;
-            let soloNumeros = String(txt).replace(/[^0-9-]/g, ''); 
-            if (soloNumeros.length > 2) {
-                let posicionPunto = soloNumeros.startsWith('-') ? 3 : 2;
-                return parseFloat(soloNumeros.slice(0, posicionPunto) + "." + soloNumeros.slice(posicionPunto));
+            // Quitamos todo lo que no sea número, punto o guion
+            let limpio = String(txt).replace(/[^-0-9.]/g, '');
+            // Si hay más de un punto (ej: 40.48.99), nos quedamos solo con el primero
+            let partes = limpio.split('.');
+            if (partes.length > 2) {
+                limpio = partes[0] + "." + partes.slice(1).join('');
             }
-            return null;
+            return parseFloat(limpio);
         }
 
-        // Leemos el CSV
+        // 3. Cargar CSV
         Papa.parse("canchas_basket_madrid.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
             complete: function(results) {
-                console.log("Canchas detectadas:", results.data.length);
+                document.getElementById('contador').innerText = results.data.length;
+                
+                results.data.forEach(function(pista, index) {
+                    // Probamos todas las combinaciones posibles de nombres de columna
+                    let lat = limpiar(pista.LATITUD || pista.latitud || pista['LATITUD']);
+                    let lon = limpiar(pista.LONGITUD || pista.longitud || pista['LONGITUD']);
 
-                results.data.forEach(function(pista) {
-                    // Usamos los nombres exactos de tus columnas
-                    let lat = limpiarCoordenada(pista.LATITUD);
-                    let lon = limpiarCoordenada(pista.LONGITUD);
-
-                    if (lat && lon) {
-                        var marcador = L.marker([lat, lon]).addTo(map);
-                        
-                        // Contenido del globo
-                        var htmlPopup = `
-                            <div style="text-align:center">
-                                <strong>${pista.EQUIPAMIENTO || "Cancha de Basket"}</strong><br>
-                                <small>${pista["NOMBRE-VIA"] || "Madrid"}</small><br><br>
-                                <button class="btn-voy" onclick="alert('¡Registrado! Esta función se guardará en base de datos pronto.')">
-                                    ¡Voy a jugar hoy!
-                                </button>
-                            </div>
-                        `;
-                        marcador.bindPopup(htmlPopup);
+                    // Esto nos dirá en la consola si alguna fila está fallando
+                    if (lat && lon && !isNaN(lat)) {
+                        L.marker([lat, lon]).addTo(map)
+                         .bindPopup(`<b>${pista.EQUIPAMIENTO || "Cancha"}</b><br>${pista.BARRIO || ""}`);
+                    } else {
+                        if(index < 5) console.log("Fila con error:", pista); 
                     }
                 });
             }
