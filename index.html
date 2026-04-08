@@ -54,7 +54,7 @@
         <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
         <p>Canchas totales: <span class="stat-num" id="total-mapa">0</span></p>
         <div style="font-size: 0.8em;">
-            <span style="color: orange;">●</span> Canchas Calle <br>
+            <span style="color: blue;">●</span> Canchas Calle <br>
             <span style="color: red;">●</span> Polideportivos
         </div>
         <p style="font-size: 0.75em; color: #666; margin-top: 10px;">En mantenimiento constante.</p>
@@ -124,13 +124,13 @@
                             if (color === "red") {
                                 nombreLugar = pista.NOMBRE || "Polideportivo sin nombre";
                             }
-                            else if (color === "orange") {
+                            else if (color === "blue") {
                                 nombreLugar = (pista['CLASE-VIAL'] || "") + " " + (pista['NOMBRE-VIA'] || "Sin Nombre");
                             }
                             
-                            L.circleMarker([lat, lon], markerStyle).addTo(color === 'orange' ? capaCanchas : capaPolis)
+                            L.circleMarker([lat, lon], markerStyle).addTo(color === 'blue' ? capaCanchas : capaPolis)
                              .bindPopup(`
-                                <strong style="color:${color}">${color === 'orange' ? '🏀 Cancha Calle' : '🏟️ Polideportivo'}</strong><br>
+                                <strong style="color:${color}">${color === 'blue' ? '🏀 Cancha Calle' : '🏟️ Polideportivo'}</strong><br>
                                 <b>${nombreLugar}</b><br>
                                 <small>Barrio: ${pista.BARRIO || "N/A"}</small><br>
                                 <small>Distrito: ${pista.DISTRITO || "N/A"}</small>
@@ -146,7 +146,7 @@
         }
 
         // 5. Ejecutar carga de datos
-        cargarCanchas("canchas_basket_madrid.csv", "orange");
+        cargarCanchas("canchas_basket_madrid.csv", "blue");
         cargarCanchas("polideportivos_aptos_saneado.csv", "red");
 
         var selectores = {
