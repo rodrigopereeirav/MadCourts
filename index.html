@@ -125,29 +125,44 @@
             dynamicTyping: true,
             skipEmptyLines: true,
             complete: function(results) {
- complete: function(results) {
-                console.log("Datos cargados:", results.data); 
+complete: function(results) {
+    console.log("Datos cargados:", results.data.length);
 
-                results.data.forEach(function(pista) {
-                    // Buscamos las coordenadas aunque se llamen LATITUD, latitud, LONGITUD...
-                    var lat = pista.latitud || pista.LATITUD || pista.Latitud;
-                    var lon = pista.longitud || pista.LONGITUD || pista.Longitud;
-                    var nombre = pista.nombre || pista.NOMBRE || pista.Nombre || "Pista de Baloncesto";
-                    var acc = pista.accesibilidad || pista.ACCESIBILIDAD || "No indicado";
+    results.data.forEach(function(pista) {
+        // 1. Extraemos el texto de las coordenadas
+        let latRaw = String(pista.LATITUD || "");
+        let lonRaw = String(pista.LONGITUD || "");
 
-                    if (lat && lon) {
-                        // Creamos el marcador
-                        var marcador = L.marker([lat, lon]).addTo(map);
-                        
-                        var texto = `
-                            <strong>${nombre}</strong><br>
-                            Accesibilidad: ${acc}<br><br>
-                            <button onclick="alert('Próximamente: Disponibilidad')">Ver disponibilidad</button>
-                        `;
-                        marcador.bindPopup(texto);
-                    }
-                });
+        // 2. Limpieza mágica: 
+        // Quitamos TODOS los puntos, y luego ponemos uno después de los dos primeros números
+        // Ejemplo: "40.489.982" -> "40489982" -> "40.489982"
+        function limpiarCoordenada(txt) {
+            let soloNumeros = txt.replace(/[^0-9-]/g, ''); // Quitamos todo lo que no sea número o el signo menos
+            if (soloNumeros.length > 2) {
+                // El signo menos ocupa una posición en la longitud (-3.72...)
+                let posicionPunto = soloNumeros.startsWith('-') ? 3 : 2;
+                return parseFloat(soloNumeros.slice(0, posicionPunto) + "." + soloNumeros.slice(posicionPunto));
             }
+            return null;
+        }
+
+        let lat = limpiarCoordenada(latRaw);
+        let lon = limpiarCoordenada(lonRaw);
+
+        // 3. Si tenemos números válidos, pintamos el marcador
+        if (lat && lon) {
+            var marcador = L.marker([lat, lon]).addTo(map);
+            
+            var popupContenido = `
+                <strong>${pista.EQUIPAMIENTO || "Pista de Baloncesto"}</strong><br>
+                <b>Barrio:</b> ${pista.BARRIO || "Madrid"}<br>
+                <b>Accesibilidad:</b> ${pista.ACCESIBILIDAD == 0 ? "No accesible" : "Accesible"}<br><br>
+                <button onclick="alert('Sistema de disponibilidad en camino...')">¿Vas a jugar?</button>
+            `;
+            marcador.bindPopup(popupContenido);
+        }
+    });
+}
             error: function(err) {
                 console.error("Error al cargar el CSV:", err);
             }
