@@ -48,6 +48,9 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
+        var capaCanchas = L.layerGroup().addTo(map);
+        var capaPolis = L.layerGroup().addTo(map);
+
         // 2. Variable global para el contador
         let totalPintados = 0;
 
@@ -100,7 +103,7 @@
                                 nombreLugar = (pista['CLASE-VIAL'] || "") + " " + (pista['NOMBRE-VIA'] || "Sin Nombre");
                             }
                             
-                            L.circleMarker([lat, lon], markerStyle).addTo(map)
+                            L.circleMarker([lat, lon], markerStyle).addTo(color === 'blue' ? capaCanchas : capaPolis)
                              .bindPopup(`
                                 <strong style="color:${color}">${color === 'blue' ? '🏀 Cancha Calle' : '🏟️ Polideportivo'}</strong><br>
                                 <b>${nombreLugar}</b><br>
@@ -120,6 +123,13 @@
         // 5. Ejecutar carga de datos
         cargarCanchas("canchas_basket_madrid.csv", "blue");
         cargarCanchas("polideportivos_aptos_saneado.csv", "red");
+
+        var selectores = {
+            "🏀 Canchas de Calle": capaCanchas,
+            "🏟️ Polideportivos": capaPolis
+        };
+
+        L.control.layers(null, selectores).addTo(map);
 
     </script>
 </body>
