@@ -79,7 +79,7 @@
                         // Creamos el marcador con el popup personalizado
                         L.marker([lat, lon]).addTo(map)
                          .bindPopup(`
-                            <b>${pista['CLASE-VIAL'] || "Calle"} ${pista['NOMBRE-VIAL'] || "Sin Nombre"}</b><br>
+                            <b>${pista['CLASE-VIAL'] || "Calle"} ${pista['NOMBRE-VIA'] || "Sin Nombre"}</b><br>
                             ${pista.EQUIPAMIENTO || "Cancha de Basket"}<br>
                             <small>Barrio: ${pista.BARRIO || "N/A"}</small>
                          `);
