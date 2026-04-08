@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MadCourts - Reparación de Datos</title>
+    <title>MadCourts - Posición Real</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; }
@@ -20,9 +20,8 @@
 
     <div class="info-panel">
         <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
-        <p>CSV: <span class="stat-num" id="total-csv">0</span></p>
-        <p>En Mapa: <span class="stat-num" id="total-mapa" style="color: green;">0</span></p>
-        <p style="font-size: 0.7em; color: #888;">*Limpieza agresiva activada para recuperar coordenadas rotas.</p>
+        <p>Canchas en Madrid: <span class="stat-num" id="total-mapa">0</span></p>
+        <p style="font-size: 0.75em; color: #666;">Ubicación exacta (sin jitter).</p>
     </div>
 
     <div id="map"></div>
@@ -34,31 +33,19 @@
         var map = L.map('map').setView([40.4167, -3.7037], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        // FUNCIÓN DE LIMPIEZA EXTREMA
         function superLimpieza(txt, tipo) {
             if (!txt) return null;
-            
-            // 1. Quitamos todo lo que no sea número o el signo menos
             let soloNumeros = String(txt).replace(/[^-0-9]/g, '');
             
             if (tipo === 'lat') {
-                // Buscamos el "40" inicial. Si el número es "4039...", lo convertimos en "40.39..."
-                if (soloNumeros.startsWith('40')) {
-                    return parseFloat('40.' + soloNumeros.substring(2));
-                }
-                // Si alguien puso 4.039...
-                if (soloNumeros.startsWith('4')) {
-                    return parseFloat('40.' + soloNumeros.substring(1));
-                }
+                if (soloNumeros.startsWith('40')) return parseFloat('40.' + soloNumeros.substring(2));
+                if (soloNumeros.startsWith('4')) return parseFloat('40.' + soloNumeros.substring(1));
             } else {
-                // Para longitud (Madrid es -3.6...)
-                // Quitamos el signo menos para procesar y lo devolvemos luego
                 let esNegativo = soloNumeros.includes('-');
                 let puro = soloNumeros.replace('-', '');
-                
                 if (puro.startsWith('3')) {
                     let res = parseFloat('3.' + puro.substring(1));
-                    return esNegativo ? -res : -res; // En Madrid siempre es negativo
+                    return -res; 
                 }
             }
             return null;
@@ -69,27 +56,18 @@
             header: true,
             skipEmptyLines: true,
             complete: function(results) {
-                document.getElementById('total-csv').innerText = results.data.length;
                 let pintados = 0;
 
                 results.data.forEach(function(pista) {
-                    // Aplicamos la super limpieza
                     let lat = superLimpieza(pista.LATITUD || pista.latitud, 'lat');
                     let lon = superLimpieza(pista.LONGITUD || pista.longitud, 'lon');
 
-                    // Validamos que estén en el área de Madrid después de arreglarlos
-                    if (lat > 39 && lat < 42 && lon > -5 && lon < -2) {
-                        let latJ = lat + (Math.random() - 0.5) * 0.0003;
-                        let lonJ = lon + (Math.random() - 0.5) * 0.0003;
-
-                        L.marker([latJ, lonJ]).addTo(map)
+                    // Dibujamos solo si está en el rango de Madrid
+                    if (lat > 39.8 && lat < 41.2 && lon > -4.5 && lon < -3.0) {
+                        // USAMOS LAS COORDENADAS DIRECTAS (sin jitter)
+                        L.marker([lat, lon]).addTo(map)
                          .bindPopup(`<b>${pista.EQUIPAMIENTO || "Cancha"}</b><br>${pista.BARRIO || ""}`);
                         pintados++;
                     }
                 });
-                document.getElementById('total-mapa').innerText = pintados;
-            }
-        });
-    </script>
-</body>
-</html>
+                document.getElementById('total-map
