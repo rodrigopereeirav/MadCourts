@@ -21,6 +21,31 @@
         /* Estilo para que los popups se vean más limpios */
         .leaflet-popup-content-wrapper { border-radius: 8px; }
         .leaflet-popup-content { font-size: 14px; line-height: 1.4; }
+
+        /* Personalización del Selector de Capas */
+        .leaflet-control-layers {
+            border: none !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            border-radius: 10px !important;
+            padding: 10px !important;
+            background: white !important;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        /* Cambiar el color del check (naranja MadCourts) */
+        .leaflet-control-layers-selector {
+            accent-color: #e65c00; 
+            transform: scale(1.1);
+            margin-right: 8px !important;
+        }
+        
+        /* Espaciado entre las opciones */
+        .leaflet-control-layers-overlays label {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
