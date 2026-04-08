@@ -91,11 +91,19 @@
                                 opacity: 1,
                                 fillOpacity: 0.8
                             };
-
+                            
+                            let nombreLugar;
+                            if (color === "red") {
+                                nombreLugar = pista.NOMBRE || "Polideportivo sin nombre";
+                            }
+                            else if (color === "blue") {
+                                nombreLugar = (pista['CLASE-VIAL'] || "") + " " + (pista['NOMBRE-VIA'] || "Sin Nombre");
+                            }
+                            
                             L.circleMarker([lat, lon], markerStyle).addTo(map)
                              .bindPopup(`
                                 <strong style="color:${color}">${color === 'blue' ? '🏀 Cancha Calle' : '🏟️ Polideportivo'}</strong><br>
-                                <b>${pista['CLASE-VIAL'] || ""} ${pista['NOMBRE-VIA'] || "Sin Nombre"}</b><br>
+                                <b>${nombreLugar}</b><br>
                                 <small>Barrio: ${pista.BARRIO || "N/A"}</small><br>
                                 <small>Distrito: ${pista.DISTRITO || "N/A"}</small>
                              `);
