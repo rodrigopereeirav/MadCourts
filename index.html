@@ -125,23 +125,29 @@
             dynamicTyping: true,
             skipEmptyLines: true,
             complete: function(results) {
-                console.log("Datos cargados:", results.data); // Esto ayuda a depurar
+ complete: function(results) {
+                console.log("Datos cargados:", results.data); 
 
                 results.data.forEach(function(pista) {
-                    // Solo si la fila tiene latitud y longitud
-                    if (pista.latitud && pista.longitud) {
-                        var marcador = L.marker([pista.latitud, pista.longitud]).addTo(map);
+                    // Buscamos las coordenadas aunque se llamen LATITUD, latitud, LONGITUD...
+                    var lat = pista.latitud || pista.LATITUD || pista.Latitud;
+                    var lon = pista.longitud || pista.LONGITUD || pista.Longitud;
+                    var nombre = pista.nombre || pista.NOMBRE || pista.Nombre || "Pista de Baloncesto";
+                    var acc = pista.accesibilidad || pista.ACCESIBILIDAD || "No indicado";
+
+                    if (lat && lon) {
+                        // Creamos el marcador
+                        var marcador = L.marker([lat, lon]).addTo(map);
                         
-                        // Qué mostrar al hacer clic
                         var texto = `
-                            <strong>${pista.nombre || "Pista de Baloncesto"}</strong><br>
-                            Accesibilidad: ${pista.accesibilidad}<br><br>
-                            <button onclick="alert('Función de disponibilidad próximamente')">Ver disponibilidad</button>
+                            <strong>${nombre}</strong><br>
+                            Accesibilidad: ${acc}<br><br>
+                            <button onclick="alert('Próximamente: Disponibilidad')">Ver disponibilidad</button>
                         `;
                         marcador.bindPopup(texto);
                     }
                 });
-            },
+            }
             error: function(err) {
                 console.error("Error al cargar el CSV:", err);
             }
