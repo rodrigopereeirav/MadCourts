@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MadCourts - Posición Real</title>
+    <title>MadCourts - Mapa de Canchas</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
@@ -17,14 +17,22 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 220px;
         }
         .stat-num { font-weight: bold; color: #e65c00; font-size: 1.2em; }
+        
+        /* Estilo para que los popups se vean más limpios */
+        .leaflet-popup-content-wrapper { border-radius: 8px; }
+        .leaflet-popup-content { font-size: 14px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
     <div class="info-panel">
         <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
-        <p>Canchas en Madrid: <span class="stat-num" id="total-mapa">0</span></p>
-        <p style="font-size: 0.75em; color: #666;">En mantenimiento constante.</p>
+        <p>Canchas totales: <span class="stat-num" id="total-mapa">0</span></p>
+        <div style="font-size: 0.8em;">
+            <span style="color: blue;">●</span> Canchas Calle <br>
+            <span style="color: red;">●</span> Polideportivos
+        </div>
+        <p style="font-size: 0.75em; color: #666; margin-top: 10px;">En mantenimiento constante.</p>
     </div>
 
     <div id="map"></div>
@@ -33,15 +41,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // Inicializar el mapa centrado en Madrid
+        // 1. Inicializar el mapa
         var map = L.map('map').setView([40.4167, -3.7037], 12);
         
-        // Cargar las teselas (imágenes) de OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Función para limpiar y arreglar coordenadas rotas
+        // 2. Variable global para el contador
+        let totalPintados = 0;
+
+        // 3. Función de limpieza de coordenadas
         function superLimpieza(txt, tipo) {
             if (!txt) return null;
             let soloNumeros = String(txt).replace(/[^-0-9]/g, '');
@@ -50,48 +60,58 @@
                 if (soloNumeros.startsWith('40')) return parseFloat('40.' + soloNumeros.substring(2));
                 if (soloNumeros.startsWith('4')) return parseFloat('40.' + soloNumeros.substring(1));
             } else {
-                let esNegativo = soloNumeros.includes('-');
                 let puro = soloNumeros.replace('-', '');
                 if (puro.startsWith('3')) {
-                    let res = parseFloat('3.' + puro.substring(1));
-                    return -res; 
+                    return -parseFloat('3.' + puro.substring(1)); 
                 }
             }
             return null;
         }
 
-        // Leer el CSV y pintar los marcadores
-        Papa.parse("canchas_basket_madrid.csv", {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                let pintados = 0;
+        // 4. Función para cargar archivos y pintar
+        function cargarCanchas(archivo, color) {
+            Papa.parse(archivo, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    results.data.forEach(function(pista) {
+                        let lat = superLimpieza(pista.LATITUD || pista.latitud, 'lat');
+                        let lon = superLimpieza(pista.LONGITUD || pista.longitud, 'lon');
 
-                results.data.forEach(function(pista) {
-                    // Extraemos latitud y longitud usando limpieza
-                    let lat = superLimpieza(pista.LATITUD || pista.latitud, 'lat');
-                    let lon = superLimpieza(pista.LONGITUD || pista.longitud, 'lon');
+                        // Validar que está en el área de Madrid
+                        if (lat && lon && lat > 39.8 && lat < 41.2 && lon > -4.5 && lon < -3.0) {
+                            
+                            let markerStyle = {
+                                radius: color === 'red' ? 9 : 7, // Polideportivos un pelín más grandes
+                                fillColor: color,
+                                color: "#fff", // Borde blanco para que resalte
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.8
+                            };
 
-                    // Filtro de seguridad para asegurar que están en Madrid
-                    if (lat && lon && lat > 39.8 && lat < 41.2 && lon > -4.5 && lon < -3.0) {
-                        
-                        // Creamos el marcador con el popup personalizado
-                        L.marker([lat, lon]).addTo(map)
-                         .bindPopup(`
-                            <b>${pista['CLASE-VIAL'] || "Calle"} ${pista['NOMBRE-VIA'] || "Sin Nombre"}</b><br>
-                            <small>Barrio: ${pista.BARRIO || "N/A"}</small><br>
-                            <small>Transporte: ${pista.TRANSPORTE || "Sin información"}</small> 
-                         `);
-                        
-                        pintados++;
-                    }
-                });
+                            L.circleMarker([lat, lon], markerStyle).addTo(map)
+                             .bindPopup(`
+                                <strong style="color:${color}">${color === 'blue' ? '🏀 Cancha Calle' : '🏟️ Polideportivo'}</strong><br>
+                                <b>${pista['CLASE-VIAL'] || ""} ${pista['NOMBRE-VIA'] || "Sin Nombre"}</b><br>
+                                <small>Barrio: ${pista.BARRIO || "N/A"}</small><br>
+                                <small>Distrito: ${pista.DISTRITO || "N/A"}</small>
+                             `);
+                            
+                            totalPintados++;
+                        }
+                    });
+                    // Actualizar contador en la interfaz
+                    document.getElementById('total-mapa').innerText = totalPintados;
+                }
+            });
+        }
 
-                // Actualizar el contador del panel
-                document.getElementById('total-mapa').innerText = pintados;
-            }
-        });
+        // 5. Ejecutar carga de datos
+        cargarCanchas("canchas_basket_madrid.csv", "blue");
+        cargarCanchas("polideportivos_aptos.csv", "red");
+
     </script>
 </body>
 </html>
