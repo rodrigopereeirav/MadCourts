@@ -67,7 +67,10 @@
 
     <script>
         // 1. Inicializar el mapa
-        var map = L.map('map').setView([40.4167, -3.7037], 12);
+        var map = L.map('map', { 
+                           minZoom: 11,
+                           maxZoom: 20
+                       }).setView([40.4167, -3.7037], 12);
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
