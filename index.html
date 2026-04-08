@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basket Madrid - Disponibilidad</title>
+    <title>MadCourts - Basket Madrid</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #map { height: 100vh; width: 100%; }
         .info-panel { 
-            position: absolute; top: 10px; left: 50px; z-index: 1000; 
-            background: white; padding: 15px; border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            max-width: 250px;
+            position: absolute; top: 15px; left: 50px; z-index: 1000; 
+            background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 280px;
+        }
+        .btn-voy {
+            background-color: #ff6600; color: white; border: none;
+            padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <div class="info-panel">
-        <h2 style="margin:0">🏀 Pistas Madrid</h2>
-        <p>Haz clic en los puntos para ver detalles.</p>
+        <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
+        <p>Encuentra tu cancha en Madrid y marca tu asistencia.</p>
     </div>
 
     <div id="map"></div>
@@ -30,201 +33,53 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // 3. Configuración del mapa centrado en Madrid
+        // Inicializamos el mapa centrado en Madrid
         var map = L.map('map').setView([40.4167, -3.7037], 12);
         
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // 4. Leer el archivo CSV y poner los marcadores
-        // IMPORTANTE: Tu archivo debe llamarse exactamente <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basket Madrid - Disponibilidad</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; }
-        #map { height: 100vh; width: 100%; }
-        .info-panel { 
-            position: absolute; top: 10px; left: 50px; z-index: 1000; 
-            background: white; padding: 15px; border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            max-width: 250px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="info-panel">
-        <h2 style="margin:0">🏀 Pistas Madrid</h2>
-        <p>Haz clic en los puntos para ver detalles.</p>
-    </div>
-
-    <div id="map"></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-
-    <script>
-        // 3. Configuración del mapa centrado en Madrid
-        var map = L.map('map').setView([40.4167, -3.7037], 12);
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // 4. Leer el archivo CSV y poner los marcadores
-        // IMPORTANTE: Tu archivo debe llamarse exactamente <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basket Madrid - Disponibilidad</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; }
-        #map { height: 100vh; width: 100%; }
-        .info-panel { 
-            position: absolute; top: 10px; left: 50px; z-index: 1000; 
-            background: white; padding: 15px; border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            max-width: 250px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="info-panel">
-        <h2 style="margin:0">🏀 Pistas Madrid</h2>
-        <p>Haz clic en los puntos para ver detalles.</p>
-    </div>
-
-    <div id="map"></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-
-    <script>
-        // 3. Configuración del mapa centrado en Madrid
-        var map = L.map('map').setView([40.4167, -3.7037], 12);
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // 4. Leer el archivo CSV y poner los marcadores
-        // IMPORTANTE: Tu archivo debe llamarse exactamente canchas_basket_madrid.csv
-        Papa.parse("canchas_basket_madrid.csv", {
-            download: true,
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-complete: function(results) {
-    console.log("Datos cargados:", results.data.length);
-
-    results.data.forEach(function(pista) {
-        // 1. Extraemos el texto de las coordenadas
-        let latRaw = String(pista.LATITUD || "");
-        let lonRaw = String(pista.LONGITUD || "");
-
-        // 2. Limpieza mágica: 
-        // Quitamos TODOS los puntos, y luego ponemos uno después de los dos primeros números
-        // Ejemplo: "40.489.982" -> "40489982" -> "40.489982"
+        // Función para limpiar esas coordenadas raras con muchos puntos
         function limpiarCoordenada(txt) {
-            let soloNumeros = txt.replace(/[^0-9-]/g, ''); // Quitamos todo lo que no sea número o el signo menos
+            if (!txt) return null;
+            let soloNumeros = String(txt).replace(/[^0-9-]/g, ''); 
             if (soloNumeros.length > 2) {
-                // El signo menos ocupa una posición en la longitud (-3.72...)
                 let posicionPunto = soloNumeros.startsWith('-') ? 3 : 2;
                 return parseFloat(soloNumeros.slice(0, posicionPunto) + "." + soloNumeros.slice(posicionPunto));
             }
             return null;
         }
 
-        let lat = limpiarCoordenada(latRaw);
-        let lon = limpiarCoordenada(lonRaw);
-
-        // 3. Si tenemos números válidos, pintamos el marcador
-        if (lat && lon) {
-            var marcador = L.marker([lat, lon]).addTo(map);
-            
-            var popupContenido = `
-                <strong>${pista.EQUIPAMIENTO || "Pista de Baloncesto"}</strong><br>
-                <b>Barrio:</b> ${pista.BARRIO || "Madrid"}<br>
-                <b>Accesibilidad:</b> ${pista.ACCESIBILIDAD == 0 ? "No accesible" : "Accesible"}<br><br>
-                <button onclick="alert('Sistema de disponibilidad en camino...')">¿Vas a jugar?</button>
-            `;
-            marcador.bindPopup(popupContenido);
-        }
-    });
-}
-            error: function(err) {
-                console.error("Error al cargar el CSV:", err);
-            }
-        });
-    </script>
-</body>
-</html>.csv
+        // Leemos el CSV
         Papa.parse("canchas_basket_madrid.csv", {
             download: true,
             header: true,
-            dynamicTyping: true,
             skipEmptyLines: true,
             complete: function(results) {
-                console.log("Datos cargados:", results.data); // Esto ayuda a depurar
+                console.log("Canchas detectadas:", results.data.length);
 
                 results.data.forEach(function(pista) {
-                    // Solo si la fila tiene latitud y longitud
-                    if (pista.latitud && pista.longitud) {
-                        var marcador = L.marker([pista.latitud, pista.longitud]).addTo(map);
-                        
-                        // Qué mostrar al hacer clic
-                        var texto = `
-                            <strong>${pista.nombre || "Pista de Baloncesto"}</strong><br>
-                            Accesibilidad: ${pista.accesibilidad}<br><br>
-                            <button onclick="alert('Función de disponibilidad próximamente')">Ver disponibilidad</button>
-                        `;
-                        marcador.bindPopup(texto);
-                    }
-                });
-            },
-            error: function(err) {
-                console.error("Error al cargar el CSV:", err);
-            }
-        });
-    </script>
-</body>
-</html>.csv
-        Papa.parse("canchas_basket_madrid.csv", {
-            download: true,
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                console.log("Datos cargados:", results.data); // Esto ayuda a depurar
+                    // Usamos los nombres exactos de tus columnas
+                    let lat = limpiarCoordenada(pista.LATITUD);
+                    let lon = limpiarCoordenada(pista.LONGITUD);
 
-                results.data.forEach(function(pista) {
-                    // Solo si la fila tiene latitud y longitud
-                    if (pista.latitud && pista.longitud) {
-                        var marcador = L.marker([pista.latitud, pista.longitud]).addTo(map);
+                    if (lat && lon) {
+                        var marcador = L.marker([lat, lon]).addTo(map);
                         
-                        // Qué mostrar al hacer clic
-                        var texto = `
-                            <strong>${pista.nombre || "Pista de Baloncesto"}</strong><br>
-                            Accesibilidad: ${pista.accesibilidad}<br><br>
-                            <button onclick="alert('Función de disponibilidad próximamente')">Ver disponibilidad</button>
+                        // Contenido del globo
+                        var htmlPopup = `
+                            <div style="text-align:center">
+                                <strong>${pista.EQUIPAMIENTO || "Cancha de Basket"}</strong><br>
+                                <small>${pista["NOMBRE-VIA"] || "Madrid"}</small><br><br>
+                                <button class="btn-voy" onclick="alert('¡Registrado! Esta función se guardará en base de datos pronto.')">
+                                    ¡Voy a jugar hoy!
+                                </button>
+                            </div>
                         `;
-                        marcador.bindPopup(texto);
+                        marcador.bindPopup(htmlPopup);
                     }
                 });
-            },
-            error: function(err) {
-                console.error("Error al cargar el CSV:", err);
             }
         });
     </script>
