@@ -4,22 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MadCourts - Basket Madrid</title>
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; }
         #map { height: 100vh; width: 100%; }
         .info-panel { 
             position: absolute; top: 15px; left: 50px; z-index: 1000; 
-            background: white; padding: 15px; border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            background: white; padding: 15px; border-radius: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px;
         }
+        .stats { font-size: 0.8em; color: #666; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="info-panel">
-        <h2 style="margin:0">🏀 MadCourts</h2>
-        <p>Canchas en el sistema: <span id="contador">Cargando...</span></p>
+        <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
+        <p style="margin: 5px 0;">Canchas detectadas: <b id="total-csv">0</b></p>
+        <p class="stats">Marcadores en mapa: <b id="total-mapa" style="color: green;">0</b></p>
     </div>
 
     <div id="map"></div>
@@ -28,51 +31,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // 1. Mapa
+        // 3. JAVASCRIPT: El cerebro de la operación
+        
+        // Creamos el mapa centrado en Madrid
         var map = L.map('map').setView([40.4167, -3.7037], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
 
-        // 2. Función de limpieza ultra-segura
+        // FUNCIÓN DE LIMPIEZA: Convierte "40.48.99.22" en 40.489922
         function limpiar(txt) {
             if (!txt) return null;
-            // Quitamos todo lo que no sea número, punto o guion
             let limpio = String(txt).replace(/[^-0-9.]/g, '');
-            // Si hay más de un punto (ej: 40.48.99), nos quedamos solo con el primero
             let partes = limpio.split('.');
             if (partes.length > 2) {
+                // Mantiene el primer punto y pega el resto de números
                 limpio = partes[0] + "." + partes.slice(1).join('');
             }
-            return parseFloat(limpio);
+            let num = parseFloat(limpio);
+            return isNaN(num) ? null : num;
         }
 
-        // 3. Cargar CSV
+        // LECTURA DEL ARCHIVO
         Papa.parse("canchas_basket_madrid.csv", {
             download: true,
             header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                document.getElementById('contador').innerText = results.data.length;
-                
-                results.data.forEach(function(pista, index) {
-                    // Probamos todas las combinaciones posibles de nombres de columna
-                    let lat = limpiar(pista.LATITUD || pista.latitud || pista['LATITUD']);
-                    let lon = limpiar(pista.LONGITUD || pista.longitud || pista['LONGITUD']);
-
-let contadorReal = 0; // Creamos un contador nuevo
-
-results.data.forEach(function(pista) {
-    let lat = limpiar(pista.LATITUD);
-    let lon = limpiar(pista.LONGITUD);
-
-    if (lat && lon && !isNaN(lat)) {
-        L.marker([lat, lon]).addTo(map);
-        contadorReal++; // Sumamos uno cada vez que pintamos un punto
-    }
-});
-
-console.log("Marcadores pintados en el mapa: " + contadorReal);
-            }
-        });
-    </script>
-</body>
-</html>
