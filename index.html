@@ -4,21 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MadCourts - Mapa de Basket</title>
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; }
         #map { height: 100vh; width: 100%; }
-        
         .info-panel { 
             position: absolute; top: 15px; left: 50px; z-index: 1000; 
             background: white; padding: 15px; border-radius: 10px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px;
         }
-        .stats-box {
-            display: flex; justify-content: space-between;
-            margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;
-        }
+        .stats-box { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
         .stat-item { text-align: center; flex: 1; }
         .stat-num { display: block; font-weight: bold; font-size: 1.2em; color: #e65c00; }
         .stat-label { font-size: 0.7em; color: #666; text-transform: uppercase; }
@@ -28,12 +23,64 @@
 
     <div class="info-panel">
         <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
-        <p style="margin: 5px 0; font-size: 0.9em;">Canchas públicas de Madrid</p>
-        
+        <p style="margin: 5px 0; font-size: 0.9em;">Filtro de Madrid Activo ✅</p>
         <div class="stats-box">
             <div class="stat-item">
                 <span class="stat-num" id="total-csv">0</span>
                 <span class="stat-label">En lista</span>
             </div>
             <div class="stat-item">
-                <span class="stat-num" id="total-mapa" style
+                <span class="stat-num" id="total-mapa" style="color: green;">0</span>
+                <span class="stat-label">En Madrid</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <script>
+        var map = L.map('map').setView([40.4167, -3.7037], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        function limpiar(txt) {
+            if (!txt) return null;
+            let limpio = String(txt).replace(/[^-0-9.]/g, '');
+            let partes = limpio.split('.');
+            if (partes.length > 2) {
+                limpio = partes[0] + "." + partes.slice(1).join('');
+            }
+            let num = parseFloat(limpio);
+            return isNaN(num) ? null : num;
+        }
+
+        Papa.parse("canchas_basket_madrid.csv", {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                document.getElementById('total-csv').innerText = results.data.length;
+                let pintados = 0;
+
+                results.data.forEach(function(pista) {
+                    let lat = limpiar(pista.LATITUD || pista.latitud);
+                    let lon = limpiar(pista.LONGITUD || pista.longitud);
+
+                    // FILTRO GEOGRÁFICO: Solo aceptamos puntos en la zona de Madrid
+                    if (lat > 39.8 && lat < 41.2 && lon > -4.5 && lon < -3.0) {
+                        let latJitter = lat + (Math.random() - 0.5) * 0.0002;
+                        let lonJitter = lon + (Math.random() - 0.5) * 0.0002;
+
+                        L.marker([latJitter, lonJitter]).addTo(map)
+                         .bindPopup("<b>" + (pista.EQUIPAMIENTO || "Cancha") + "</b><br>" + (pista.BARRIO || ""));
+                        pintados++;
+                    }
+                });
+                document.getElementById('total-mapa').innerText = pintados;
+            }
+        });
+    </script>
+</body>
+</html>
