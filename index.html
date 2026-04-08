@@ -3,161 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MadCourts - Mapa de Canchas</title>
+    <title>MadCourts - Naranja & Beige Edition</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; }
-        #map { height: 100vh; width: 100%; }
-        
-        .info-panel { 
-            position: absolute; top: 15px; left: 50px; z-index: 1000; 
-            background: white; padding: 15px; border-radius: 10px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 220px;
-        }
-        .stat-num { font-weight: bold; color: #e65c00; font-size: 1.2em; }
-        
-        /* Estilo para que los popups se vean más limpios */
-        .leaflet-popup-content-wrapper { border-radius: 8px; }
-        .leaflet-popup-content { font-size: 14px; line-height: 1.4; }
+        /* --- PALETA DE COLORES ---
+           Naranja Principal: #e65c00
+           Naranja Suave:     #ff944d
+           Beige Fondo Web:   #faf7f2
+           Beige Panel/Card:  #fffdfa
+           Beige Tostado (Bordes): #e0d7c6
+           Texto Principal:   #4a4439
+        --------------------------- */
 
-        /* Personalización del Selector de Capas */
-        .leaflet-control-layers {
-            border: none !important; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-            border-radius: 10px !important;
-            padding: 10px !important;
-            background: white !important;
-            font-family: 'Segoe UI', sans-serif;
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #faf7f2; /* Fondo Beige Suave */
+            color: #4a4439; /* Texto Marrón Oscuro */
         }
         
-        /* Cambiar el color del check (naranja MadCourts) */
-        .leaflet-control-layers-selector {
-            accent-color: #e65c00; 
-            transform: scale(1.1);
-            margin-right: 8px !important;
+        #map { height: 100%; width: 100%; }
+
+        /* --- NAVEGACIÓN PRINCIPAL (INFERIOR) --- */
+        .main-nav {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            background: rgba(255, 253, 250, 0.9); /* Beige Panel con transparencia */
+            backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 50px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 5px 20px rgba(74, 68, 57, 0.15);
+            border: 1px solid #e0d7c6;
         }
-        
-        /* Espaciado entre las opciones */
-        .leaflet-control-layers-overlays label {
+
+        .nav-btn {
+            padding: 12px 28px;
+            border: none;
+            background: transparent;
+            color: #4a4439;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            padding: 5px 0;
-            cursor: pointer;
+            gap: 8px;
         }
+
+        .nav-btn:hover {
+            background-color: #faf7f2;
+        }
+
+        .nav-btn.active {
+            background-color: #e65c00; /* Naranja Activo */
+            color: white;
+            box-shadow: 0 4px 10px rgba(230, 92, 0, 0.3);
+        }
+
+        /* --- CONTROL DE SECCIONES --- */
+        .content-section {
+            display: none;
+            height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* --- SECCIÓN MAPA: PANEL INFO --- */
+        .info-panel { 
+            position: absolute; 
+            top: 20px; 
+            right: 20px; /* Cambiado a la derecha para no tapar controles */
+            z-index: 1000; 
+            background: #fffdfa; /* Beige Panel */
+            padding: 15px 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(74, 68, 57, 0.1); 
+            width: 200px;
+            border: 1px solid #e0d7c6;
+        }
+        
+        .info-panel h2 { margin: 0 0 10px 0; font-size: 1.4em; }
+        .stat-num { font-weight: bold; color: #e65c00; font-size: 1.3em; }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; border: 1px solid rgba(0,0,0,0.2); }
+
+        /* --- SECCIÓN PERFIL: ESTILOS --- */
+        .profile-container {
+            background-color: #faf7f2; /* Fondo Beige Suave */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-card {
+            background: #fffdfa; /* Beige Panel */
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(74, 68, 57, 0.1);
+            text-align: center;
+            width: 350px;
+            border: 1px solid #e0d7c6;
+        }
+
+        .avatar {
+            font-size: 60px;
+            background: #e0d7c6; /* Beige Tostado */
+            width: 120px;
+            height: 120px;
+            line-height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 5px solid #fffdfa;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-card h2 { color: #e65c00; margin: 0 0 5px 0; }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            background: #faf7f2;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #e0d7c6;
+        }
+
+        .profile-stats strong { color: #e65c00; font-size: 1.2em; }
+
+        .btn-edit {
+            background-color: #e65c00;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        
+        .btn-edit:hover { background-color: #ff944d; }
+
+        /* --- ESTILOS MODERNOS PARA POPUPS DEL MAPA --- */
+        .leaflet-popup-content-wrapper {
+            padding: 0 !important;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #fffdfa !important; /* Beige Panel */
+            border: 1px solid #e0d7c6;
+        }
+        
+        .leaflet-popup-content { margin: 0 !important; width: 250px !important; color: #4a4439; }
+        .leaflet-popup-close-button { color: #4a4439 !important; padding: 10px 10px 0 0 !important; }
+
+        .popup-header {
+            padding: 15px 12px;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #e0d7c6;
+        }
+        /* Colores de cabecera sutiles */
+        .popup-header.polis { background: #faf7f2; color: #8c7f6b; } /* Beige Tostado */
+        .popup-header.calle { background: #fff3e6; color: #e65c00; } /* Naranja Suave */
+        
+        .popup-body { padding: 15px; }
+        .popup-info { font-size: 0.9em; margin-bottom: 8px; display: flex; flex-direction: column; gap: 2px; }
+        .popup-label { font-size: 0.7em; text-transform: uppercase; color: #8c7f6b; font-weight: bold; }
+        
+        .btn-routing {
+            display: block; text-align: center;
+            background: #4a4439; color: white !important;
+            text-decoration: none; padding: 10px;
+            border-radius: 8px; margin-top: 12px;
+            font-size: 0.9em; font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn-routing:hover { background: #e65c00; }
+
     </style>
 </head>
 <body>
 
-    <div class="info-panel">
-        <h2 style="margin:0; color: #e65c00;">🏀 MadCourts</h2>
-        <p>Canchas totales: <span class="stat-num" id="total-mapa">0</span></p>
-        <div style="font-size: 0.8em;">
-            <span style="color: blue;">●</span> Canchas Calle <br>
-            <span style="color: red;">●</span> Polideportivos
-        </div>
-        <p style="font-size: 0.75em; color: #666; margin-top: 10px;">En mantenimiento constante.</p>
+    <div class="main-nav">
+        <button class="nav-btn active" onclick="showSection('map-section', event)">
+            📍 <span>Mapa</span>
+        </button>
+        <button class="nav-btn" onclick="showSection('profile-section', event)">
+            👤 <span>Perfil</span>
+        </button>
     </div>
 
-    <div id="map"></div>
+    <div id="map-section" class="content-section active">
+        <div class="info-panel">
+            <h2 style="color: #e65c00;">🏀 MadCourts</h2>
+            <p>Canchas totales: <span class="stat-num" id="total-mapa">0</span></p>
+            <hr style="border:0; border-top: 1px solid #e0d7c6; margin: 10px 0;">
+            <div class="legend-item">
+                <span class="dot" style="background-color: #e65c00;"></span> Canchas Calle
+            </div>
+            <div class="legend-item">
+                <span class="dot" style="background-color: #8c7f6b;"></span> Polideportivos
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <div id="profile-section" class="content-section">
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="avatar">🏀</div>
+                <h2>Jugador MadCourts</h2>
+                <p style="color: #8c7f6b; margin: 0;">Miembro desde 2024</p>
+                <div class="profile-stats">
+                    <div><strong>12</strong><br>Partidos</div>
+                    <div><strong>3</strong><br>Favoritas</div>
+                </div>
+                <button class="btn-edit">Editar Perfil</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // 1. Inicializar el mapa
+        // --- 1. LÓGICA DE PESTAÑAS ---
+        function showSection(sectionId, event) {
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Importante para Leaflet cuando el div estaba oculto
+            if (sectionId === 'map-section') {
+                setTimeout(() => { map.invalidateSize(); }, 100);
+            }
+        }
+
+        // --- 2. INICIALIZAR EL MAPA ---
         var map = L.map('map', { 
-                           minZoom: 11,
-                           maxZoom: 20
-                       }).setView([40.4167, -3.7037], 12);
+            minZoom: 11, maxZoom: 19, closePopupOnClick: true, zoomControl: false // Quitamos botones zoom por defecto
+        }).setView([40.4167, -3.7037], 13);
         
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+        // Añadimos control de zoom en la esquina superior izquierda
+        L.control.zoom({ position: 'topleft' }).addTo(map);
+
+        // Mapa base más claro y limpio (CartoDB Positron)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© CARTO'
         }).addTo(map);
 
         var capaCanchas = L.layerGroup().addTo(map);
         var capaPolis = L.layerGroup().addTo(map);
-
-        // 2. Variable global para el contador
         let totalPintados = 0;
 
-        // 3. Función de limpieza de coordenadas
-        function superLimpieza(txt, tipo) {
-            if (!txt) return null;
-            let soloNumeros = String(txt).replace(/[^-0-9]/g, '');
-            
-            if (tipo === 'lat') {
-                if (soloNumeros.startsWith('40')) return parseFloat('40.' + soloNumeros.substring(2));
-                if (soloNumeros.startsWith('4')) return parseFloat('40.' + soloNumeros.substring(1));
-            } else {
-                let puro = soloNumeros.replace('-', '');
-                if (puro.startsWith('3')) {
-                    return -parseFloat('3.' + puro.substring(1)); 
-                }
-            }
-            return null;
-        }
-
-        // 4. Función para cargar archivos y pintar
-        function cargarCanchas(archivo, color) {
+        // --- 3. FUNCIÓN DE CARGA Y ESTILOS (NARANJA Y BEIGE) ---
+        function cargarCanchas(archivo, tipoCancha) {
             Papa.parse(archivo, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                delimiter: ";",
+                download: true, header: true, skipEmptyLines: true, delimiter: ";",
                 complete: function(results) {
                     results.data.forEach(function(pista) {
-                        let lat = superLimpieza(pista.LATITUD || pista.latitud, 'lat');
-                        let lon = superLimpieza(pista.LONGITUD || pista.longitud, 'lon');
+                        // Limpieza básica de coordenadas
+                        let latTxt = pista.LATITUD || pista.latitud;
+                        let lonTxt = pista.LONGITUD || pista.longitud;
+                        if(!latTxt || !lonTxt) return;
+                        
+                        let lat = parseFloat(String(latTxt).replace(',', '.'));
+                        let lon = parseFloat(String(lonTxt).replace(',', '.'));
 
-                        // Validar que está en el área de Madrid
-                        if (lat && lon && lat > 39.8 && lat < 41.2 && lon > -4.5 && lon < -3.0) {
+                        // Validar área de Madrid aproximada
+                        if (lat && lon && lat > 40.3 && lat < 40.6 && lon > -3.8 && lon < -3.5) {
                             
+                            // NUEVOS ESTILOS DE PUNTOS
                             let markerStyle = {
-                                radius: color === 'red' ? 9 : 7, // Polideportivos un pelín más grandes
-                                fillColor: color,
-                                color: "#fff", // Borde blanco para que resalte
-                                weight: 2,
-                                opacity: 1,
-                                fillOpacity: 0.8
+                                radius: tipoCancha === 'polis' ? 9 : 7,
+                                // Polideportivos Beige Tostado, Canchas Naranja
+                                fillColor: tipoCancha === 'polis' ? '#8c7f6b' : '#e65c00', 
+                                color: "#fffdfa", // Borde color crema
+                                weight: 2, opacity: 1, fillOpacity: 0.9
                             };
                             
-                            let nombreLugar;
-                            if (color === "red") {
-                                nombreLugar = pista.NOMBRE || "Polideportivo sin nombre";
-                            }
-                            else if (color === "blue") {
-                                nombreLugar = (pista['CLASE-VIAL'] || "") + " " + (pista['NOMBRE-VIA'] || "Sin Nombre");
-                            }
+                            let nombreLugar = (tipoCancha === "polis") 
+                                ? (pista.NOMBRE || "Polideportivo Municipal")
+                                : ((pista['CLASE-VIAL'] || "") + " " + (pista['NOMBRE-VIA'] || "Cancha Pública")).trim();
                             
-                            L.circleMarker([lat, lon], markerStyle).addTo(color === 'blue' ? capaCanchas : capaPolis)
-                             .bindPopup(`
-                                <strong style="color:${color}">${color === 'blue' ? '🏀 Cancha Calle' : '🏟️ Polideportivo'}</strong><br>
-                                <b>${nombreLugar}</b><br>
-                                <small>Barrio: ${pista.BARRIO || "N/A"}</small><br>
-                                <small>Distrito: ${pista.DISTRITO || "N/A"}</small>
-                             `);
+                            let icono = (tipoCancha === 'polis') ? '🏟️' : '🏀';
+                            let tituloTipo = (tipoCancha === 'polis') ? 'Polideportivo' : 'Cancha Calle';
+                            
+                            const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+                            
+                            L.circleMarker([lat, lon], markerStyle)
+                                .addTo(tipoCancha === 'polis' ? capaPolis : capaCanchas)
+                                .bindPopup(`
+                                    <div class="popup-header ${tipoCancha}">
+                                        ${icono} ${tituloTipo}
+                                    </div>
+                                    <div class="popup-body">
+                                        <div style="margin-bottom: 10px;">
+                                            <b style="font-size: 1.1em; line-height: 1.2; display: block;">${nombreLugar}</b>
+                                        </div>
+                                        <div class="popup-info">
+                                            <span class="popup-label">Distrito</span>
+                                            <span>📍 ${pista.DISTRITO || "Madrid"}</span>
+                                        </div>
+                                        <div class="popup-info">
+                                            <span class="popup-label">Barrio</span>
+                                            <span>🏘️ ${pista.BARRIO || "N/A"}</span>
+                                        </div>
+                                        <a href="${gmapsUrl}" target="_blank" class="btn-routing">
+                                            🚗 CÓMO LLEGAR
+                                        </a>
+                                    </div>
+                                `);
                             
                             totalPintados++;
                         }
                     });
-                    // Actualizar contador en la interfaz
                     document.getElementById('total-mapa').innerText = totalPintados;
                 }
             });
         }
 
-        // 5. Ejecutar carga de datos
-        cargarCanchas("canchas_basket_madrid.csv", "blue");
-        cargarCanchas("polideportivos_aptos_saneado.csv", "red");
-
-        var selectores = {
-            "🏀 Canchas de Calle": capaCanchas,
-            "🏟️ Polideportivos": capaPolis
-        };
-
-        L.control.layers(null, selectores).addTo(map);
+        // --- 4. EJECUCIÓN ---
+        // Asumimos que los archivos CSV están en la misma carpeta
+        cargarCanchas("canchas_basket_madrid.csv", "calle");
+        cargarCanchas("polideportivos_aptos_saneado.csv", "polis");
 
     </script>
 </body>
