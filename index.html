@@ -277,6 +277,18 @@
 
     cargarCanchas("canchas_basket_madrid.csv", "calle");
     cargarCanchas("polideportivos_aptos_saneado.csv", "polis");
+        
+            // --- 6. RECUPERAR SELECTOR DE CAPAS ---
+    var selectores = {
+        "<span style='color: #e65c00; font-weight: bold;'>🏀 Canchas Calle</span>": capaCanchas,
+        "<span style='color: #8c7f6b; font-weight: bold;'>🏟️ Polideportivos</span>": capaPolis
+    };
+    
+    // Lo colocamos en la esquina superior derecha para que no estorbe al logo central
+    L.control.layers(null, selectores, { 
+        collapsed: true  // Aparecerá como un icono de "hojas" que se despliega al pasar el ratón
+    }).addTo(map);
+        
     </script>
 </body>
 </html>
