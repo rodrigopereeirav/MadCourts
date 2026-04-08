@@ -58,14 +58,19 @@
                     let lat = limpiar(pista.LATITUD || pista.latitud || pista['LATITUD']);
                     let lon = limpiar(pista.LONGITUD || pista.longitud || pista['LONGITUD']);
 
-                    // Esto nos dirá en la consola si alguna fila está fallando
-                    if (lat && lon && !isNaN(lat)) {
-                        L.marker([lat, lon]).addTo(map)
-                         .bindPopup(`<b>${pista.EQUIPAMIENTO || "Cancha"}</b><br>${pista.BARRIO || ""}`);
-                    } else {
-                        if(index < 5) console.log("Fila con error:", pista); 
-                    }
-                });
+let contadorReal = 0; // Creamos un contador nuevo
+
+results.data.forEach(function(pista) {
+    let lat = limpiar(pista.LATITUD);
+    let lon = limpiar(pista.LONGITUD);
+
+    if (lat && lon && !isNaN(lat)) {
+        L.marker([lat, lon]).addTo(map);
+        contadorReal++; // Sumamos uno cada vez que pintamos un punto
+    }
+});
+
+console.log("Marcadores pintados en el mapa: " + contadorReal);
             }
         });
     </script>
