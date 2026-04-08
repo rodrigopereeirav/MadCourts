@@ -66,7 +66,7 @@
                     if (lat > 39.8 && lat < 41.2 && lon > -4.5 && lon < -3.0) {
                         // USAMOS LAS COORDENADAS DIRECTAS (sin jitter)
                         L.marker([lat, lon]).addTo(map)
-                         .bindPopup(`<b>${pista.EQUIPAMIENTO || "Cancha"}</b><br>${pista.BARRIO || ""}`);
+                         .bindPopup(`<b>${pista['CLASE-VIAL'] || "Calle"} ${pista['NOMBRE-VIAL'] || "Sin Nombre"} </b><br>${pista.BARRIO || ""}`);
                         pintados++;
                     }
                 });
