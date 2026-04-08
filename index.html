@@ -254,109 +254,117 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- 1. LÓGICA DE PESTAÑAS ---
-        function showSection(sectionId, event) {
-            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+    // --- 1. LÓGICA DE PESTAÑAS ---
+    function showSection(sectionId, event) {
+        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
 
-            // Importante para Leaflet cuando el div estaba oculto
-            if (sectionId === 'map-section') {
-                setTimeout(() => { map.invalidateSize(); }, 100);
+        if (sectionId === 'map-section') {
+            setTimeout(() => { map.invalidateSize(); }, 100);
+        }
+    }
+
+    // --- 2. INICIALIZAR EL MAPA ---
+    var map = L.map('map', { 
+        minZoom: 10, maxZoom: 19, closePopupOnClick: true, zoomControl: false 
+    }).setView([40.4167, -3.7037], 12);
+    
+    L.control.zoom({ position: 'topleft' }).addTo(map);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© CARTO'
+    }).addTo(map);
+
+    var capaCanchas = L.layerGroup().addTo(map);
+    var capaPolis = L.layerGroup().addTo(map);
+    let totalPintados = 0;
+
+    // --- 3. FUNCIÓN DE LIMPIEZA ORIGINAL (LA BUENA) ---
+    function superLimpieza(txt, tipo) {
+        if (!txt) return null;
+        let soloNumeros = String(txt).replace(/[^-0-9]/g, '');
+        
+        if (tipo === 'lat') {
+            if (soloNumeros.startsWith('40')) return parseFloat('40.' + soloNumeros.substring(2));
+            if (soloNumeros.startsWith('4')) return parseFloat('40.' + soloNumeros.substring(1));
+        } else {
+            let puro = soloNumeros.replace('-', '');
+            if (puro.startsWith('3')) {
+                return -parseFloat('3.' + puro.substring(1)); 
             }
         }
+        return null;
+    }
 
-        // --- 2. INICIALIZAR EL MAPA ---
-        var map = L.map('map', { 
-            minZoom: 11, maxZoom: 19, closePopupOnClick: true, zoomControl: false // Quitamos botones zoom por defecto
-        }).setView([40.4167, -3.7037], 13);
-        
-        // Añadimos control de zoom en la esquina superior izquierda
-        L.control.zoom({ position: 'topleft' }).addTo(map);
+    // --- 4. FUNCIÓN DE CARGA CORREGIDA ---
+    function cargarCanchas(archivo, tipoCancha) {
+        Papa.parse(archivo, {
+            download: true, header: true, skipEmptyLines: true, delimiter: ";",
+            complete: function(results) {
+                results.data.forEach(function(pista) {
+                    // Usamos superLimpieza para asegurar que los números del CSV se entiendan bien
+                    let lat = superLimpieza(pista.LATITUD || pista.latitud, 'lat');
+                    let lon = superLimpieza(pista.LONGITUD || pista.longitud, 'lon');
 
-        // Mapa base más claro y limpio (CartoDB Positron)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '© CARTO'
-        }).addTo(map);
-
-        var capaCanchas = L.layerGroup().addTo(map);
-        var capaPolis = L.layerGroup().addTo(map);
-        let totalPintados = 0;
-
-        // --- 3. FUNCIÓN DE CARGA Y ESTILOS (NARANJA Y BEIGE) ---
-        function cargarCanchas(archivo, tipoCancha) {
-            Papa.parse(archivo, {
-                download: true, header: true, skipEmptyLines: true, delimiter: ";",
-                complete: function(results) {
-                    results.data.forEach(function(pista) {
-                        // Limpieza básica de coordenadas
-                        let latTxt = pista.LATITUD || pista.latitud;
-                        let lonTxt = pista.LONGITUD || pista.longitud;
-                        if(!latTxt || !lonTxt) return;
+                    // Filtro de validación más amplio para que entre TODO Madrid
+                    if (lat && lon && lat > 39.0 && lat < 41.5 && lon > -4.5 && lon < -3.0) {
                         
-                        let lat = parseFloat(String(latTxt).replace(',', '.'));
-                        let lon = parseFloat(String(lonTxt).replace(',', '.'));
-
-                        // Validar área de Madrid aproximada
-                        if (lat && lon && lat > 40.3 && lat < 40.6 && lon > -3.8 && lon < -3.5) {
-                            
-                            // NUEVOS ESTILOS DE PUNTOS
-                            let markerStyle = {
-                                radius: tipoCancha === 'polis' ? 9 : 7,
-                                // Polideportivos Beige Tostado, Canchas Naranja
-                                fillColor: tipoCancha === 'polis' ? '#8c7f6b' : '#e65c00', 
-                                color: "#fffdfa", // Borde color crema
-                                weight: 2, opacity: 1, fillOpacity: 0.9
-                            };
-                            
-                            let nombreLugar = (tipoCancha === "polis") 
-                                ? (pista.NOMBRE || "Polideportivo Municipal")
-                                : ((pista['CLASE-VIAL'] || "") + " " + (pista['NOMBRE-VIA'] || "Cancha Pública")).trim();
-                            
-                            let icono = (tipoCancha === 'polis') ? '🏟️' : '🏀';
-                            let tituloTipo = (tipoCancha === 'polis') ? 'Polideportivo' : 'Cancha Calle';
-                            
-                            const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
-                            
-                            L.circleMarker([lat, lon], markerStyle)
-                                .addTo(tipoCancha === 'polis' ? capaPolis : capaCanchas)
-                                .bindPopup(`
-                                    <div class="popup-header ${tipoCancha}">
-                                        ${icono} ${tituloTipo}
+                        let markerStyle = {
+                            radius: tipoCancha === 'polis' ? 8 : 6,
+                            fillColor: tipoCancha === 'polis' ? '#8c7f6b' : '#e65c00', 
+                            color: "#fffdfa", 
+                            weight: 2, opacity: 1, fillOpacity: 0.9
+                        };
+                        
+                        let nombreLugar = (tipoCancha === "polis") 
+                            ? (pista.NOMBRE || "Polideportivo Municipal")
+                            : ((pista['CLASE-VIAL'] || "") + " " + (pista['NOMBRE-VIA'] || "Cancha Pública")).trim();
+                        
+                        let icono = (tipoCancha === 'polis') ? '🏟️' : '🏀';
+                        let tituloTipo = (tipoCancha === 'polis') ? 'Polideportivo' : 'Cancha Calle';
+                        
+                        // Link dinámico corregido
+                        const gmapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                        
+                        L.circleMarker([lat, lon], markerStyle)
+                            .addTo(tipoCancha === 'polis' ? capaPolis : capaCanchas)
+                            .bindPopup(`
+                                <div class="popup-header ${tipoCancha}">
+                                    ${icono} ${tituloTipo}
+                                </div>
+                                <div class="popup-body">
+                                    <div style="margin-bottom: 10px;">
+                                        <b style="font-size: 1.1em; line-height: 1.2; display: block;">${nombreLugar}</b>
                                     </div>
-                                    <div class="popup-body">
-                                        <div style="margin-bottom: 10px;">
-                                            <b style="font-size: 1.1em; line-height: 1.2; display: block;">${nombreLugar}</b>
-                                        </div>
-                                        <div class="popup-info">
-                                            <span class="popup-label">Distrito</span>
-                                            <span>📍 ${pista.DISTRITO || "Madrid"}</span>
-                                        </div>
-                                        <div class="popup-info">
-                                            <span class="popup-label">Barrio</span>
-                                            <span>🏘️ ${pista.BARRIO || "N/A"}</span>
-                                        </div>
-                                        <a href="${gmapsUrl}" target="_blank" class="btn-routing">
-                                            🚗 CÓMO LLEGAR
-                                        </a>
+                                    <div class="popup-info">
+                                        <span class="popup-label">Distrito</span>
+                                        <span>📍 ${pista.DISTRITO || "Madrid"}</span>
                                     </div>
-                                `);
-                            
-                            totalPintados++;
-                        }
-                    });
-                    document.getElementById('total-mapa').innerText = totalPintados;
-                }
-            });
-        }
+                                    <div class="popup-info">
+                                        <span class="popup-label">Barrio</span>
+                                        <span>🏘️ ${pista.BARRIO || "N/A"}</span>
+                                    </div>
+                                    <a href="${gmapsUrl}" target="_blank" class="btn-routing">
+                                        🚗 CÓMO LLEGAR
+                                    </a>
+                                </div>
+                            `);
+                        
+                        totalPintados++;
+                    }
+                });
+                document.getElementById('total-mapa').innerText = totalPintados;
+            }
+        });
+    }
 
-        // --- 4. EJECUCIÓN ---
-        // Asumimos que los archivos CSV están en la misma carpeta
-        cargarCanchas("canchas_basket_madrid.csv", "calle");
-        cargarCanchas("polideportivos_aptos_saneado.csv", "polis");
+    // --- 5. EJECUCIÓN ---
+    cargarCanchas("canchas_basket_madrid.csv", "calle");
+    cargarCanchas("polideportivos_aptos_saneado.csv", "polis");
 
-    </script>
+</script>
 </body>
 </html>
