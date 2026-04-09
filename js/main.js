@@ -148,7 +148,7 @@ function toggleFavorito(nombreCancha, elementoBoton) {
     if (canchasFavoritas.includes(nombreCancha)) {
         canchasFavoritas.splice(canchasFavoritas.indexOf(nombreCancha), 1);
         alert("⭐ Cancha quitada de favoritos: " + nombreCancha);
-        elementoBoton.innerText = "⭐ Marcar favorito";
+        elementoBoton.innerText = "⭐ Marcar Favorito";
         }
     else {
         canchasFavoritas.push(nombreCancha);
