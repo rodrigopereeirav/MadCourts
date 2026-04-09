@@ -148,18 +148,13 @@ function toggleFavorito(nombreCancha, elementoBoton) {
     if (canchasFavoritas.includes(nombreCancha)) {
         canchasFavoritas.splice(canchasFavoritas.indexOf(nombreCancha), 1);
         alert("⭐ Cancha quitada de favoritos: " + nombreCancha);
+        elementoBoton.innerText = "⭐ Marcar favorito";
         }
     else {
         canchasFavoritas.push(nombreCancha);
         alert("⭐ Cancha añadida a favoritos: " + nombreCancha);
-    }
-
-    if (canchasFavoritas.includes(nombreCancha)) {
         elementoBoton.innerText = "⭐ Quitar Favorito";
-    } else {
-        elementoBoton.innerText = "⭐ Marcar favorito";
-    }
-    
+    }    
     document.getElementById('cont-favoritos').innerText = canchasFavoritas.length;
 }
         
