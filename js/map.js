@@ -1,6 +1,6 @@
 // Inicialización del mapa
 var map = L.map('map', { 
-    minZoom: 10, maxZoom: 19, closePopupOnClick: true, zoomControl: false 
+    minZoom: 10, maxZoom: 18, closePopupOnClick: true, zoomControl: false 
 }).setView([40.4167, -3.7037], 12);
 
 L.control.zoom({ position: 'topleft' }).addTo(map);
