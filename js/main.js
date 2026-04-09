@@ -98,6 +98,8 @@ function abrirEditor() {
     document.getElementById('input-name').value = document.getElementById('user-display-name').innerText;
     document.getElementById('input-username').value = document.getElementById('user-handle').innerText;
     document.getElementById('input-bio').value = document.getElementById('user-bio').innerText;
+    document.getElementById('input-distrito').value = document.getElementById('val-distrito').innerText;
+    document.getElementById('input-barrio').value = document.getElementById('val-barrio').innerText;
     document.getElementById('input-altura').value = parseInt(document.getElementById('val-altura').innerText) || "";
     document.getElementById('input-peso').value = parseInt(document.getElementById('val-peso').innerText) || "";
     document.getElementById('input-posicion').value = document.getElementById('val-posicion').innerText;
@@ -113,6 +115,8 @@ function guardarPerfil() {
     const nuevoNombre = document.getElementById('input-name').value;
     const nuevoUser = document.getElementById('input-username').value;
     const nuevaBio = document.getElementById('input-bio').value;
+    const nuevoDistrito = document.getElementById('input-distrito').value;
+    const nuevoBarrio = document.getElementById('input-barrio').value;
     const nuevaAlt = document.getElementById('input-altura').value;
     const nuevoPeso = document.getElementById('input-peso').value;
     const nuevaPos = document.getElementById('input-posicion').value;
@@ -122,10 +126,13 @@ function guardarPerfil() {
     document.getElementById('user-display-name').innerText = nuevoNombre;
     document.getElementById('user-handle').innerText = nuevoUser.startsWith('@') ? nuevoUser : '@' + nuevoUser;
     document.getElementById('user-bio').innerText = `"${nuevaBio}"`;
+    document.getElementById('val-distrito').innerText = nuevoDistrito || "Distrito";
+    document.getElementById('val-barrio').innerText = nuevoBarrio || "Barrio";
     document.getElementById('val-altura').innerText = nuevaAlt + " cm";
     document.getElementById('val-peso').innerText = nuevoPeso + " kg";
     document.getElementById('val-posicion').innerText = nuevaPos;
     document.getElementById('val-nivel').innerText = nuevoNivel;
+
 
     // 3. Cerrar y avisar
     cerrarEditor();
