@@ -318,6 +318,24 @@ body, html {
     text-decoration: none; padding: 10px; border-radius: 8px; margin-top: 12px; font-weight: bold;
 }
 
+.btn-fav {
+    background: none;
+    border: 1px solid #e65c00;
+    color: #e65c00;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-fav:hover {
+    background: #e65c00;
+    color: white;
+}
+
 /* Personalización del selector de capas */
 .leaflet-control-layers {
     background: #fffdfa !important;
