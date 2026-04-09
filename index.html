@@ -67,6 +67,39 @@
     </div>
 </div>
 
+    <div id="modal-editor" class="modal">
+    <div class="modal-content">
+        <h3>Editar mi Ficha</h3>
+        <input type="text" id="input-name" placeholder="Nombre completo">
+        <input type="text" id="input-username" placeholder="@usuario">
+        <textarea id="input-bio" placeholder="Tu biografía..."></textarea>
+        
+        <div class="input-group">
+            <input type="number" id="input-altura" placeholder="Altura (cm)">
+            <input type="number" id="input-peso" placeholder="Peso (kg)">
+        </div>
+
+        <select id="input-posicion">
+            <option value="Base">Base</option>
+            <option value="Escolta">Escolta</option>
+            <option value="Alero">Alero</option>
+            <option value="Ala-Pívot">Ala-Pívot</option>
+            <option value="Pívot">Pívot</option>
+        </select>
+
+        <select id="input-nivel">
+            <option value="Principiante">Principiante</option>
+            <option value="Amateur">Amateur</option>
+            <option value="Pro">Pro</option>
+        </select>
+
+        <div class="modal-buttons">
+            <button onclick="cerrarEditor()" class="btn-cancelar">Cancelar</button>
+            <button onclick="guardarPerfil()" class="btn-guardar">Guardar Cambios</button>
+        </div>
+    </div>
+</div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
