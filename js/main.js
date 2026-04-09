@@ -143,7 +143,7 @@ function guardarPerfil() {
     console.log("Perfil actualizado localmente");
 }
 
-function toggleFavorito(nombreCancha) {
+function toggleFavorito(nombreCancha, elementoBoton) {
     console.log("Has marcado como favorita: " + nombreCancha);
     if (canchasFavoritas.includes(nombreCancha)) {
         canchasFavoritas.splice(canchasFavoritas.indexOf(nombreCancha), 1);
@@ -153,6 +153,13 @@ function toggleFavorito(nombreCancha) {
         canchasFavoritas.push(nombreCancha);
         alert("⭐ Cancha añadida a favoritos: " + nombreCancha);
     }
+
+    if (canchasFavoritas.includes(nombreCancha)) {
+        elementoBoton.innerText = "⭐ Quitar Favorito";
+    } else {
+        elementoBoton.innerText = "⭐ Marcar favorito";
+    }
+    
     document.getElementById('cont-favoritos').innerText = canchasFavoritas.length;
 }
         
