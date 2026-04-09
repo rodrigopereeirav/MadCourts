@@ -139,6 +139,21 @@ function guardarPerfil() {
     cerrarEditor();
     console.log("Perfil actualizado localmente");
 }
+
+let canchasFavoritas = []
+
+function toggleFavorito(nombreCancha) {
+    console.log("Has marcado como favorita: " + nombreCancha);
+    if (canchasFavoritas.includes(nombreCancha)) {
+        canchasFavoritas.splice(canchasFavoritas.indexOf(nombreCancha), 1);
+        alert("⭐ Cancha quitada de favoritos: " + nombreCancha);
+        }
+    else {
+        canchasFavoritas.push(nombreCancha);
+        alert("⭐ Cancha añadida a favoritos: " + nombreCancha);
+    }
+    document.getElementById('cont-favoritos').innerText = canchasFavoritas.length;
+}
         
 
 // Ejecución inicial
