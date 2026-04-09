@@ -30,19 +30,42 @@
     </div>
 
     <div id="profile-section" class="content-section">
-        <div class="profile-container">
-            <div class="profile-card">
-                <div class="avatar">🏀</div>
-                <h2>Jugador MadCourts</h2>
-                <p style="color: #8c7f6b; margin: 0;">Miembro desde 2024</p>
-                <div class="profile-stats">
-                    <div><strong>12</strong><br>Partidos</div>
-                    <div><strong>3</strong><br>Favoritas</div>
-                </div>
-                <button class="btn-edit">Editar Perfil</button>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="avatar">🏀</div>
+            <h2 id="user-display-name">Jugador MadCourts</h2>
+            <p id="user-handle" style="color: #8c7f6b; margin: 0;">@usuario</p>
+            
+            <p id="user-bio" class="profile-bio">"Aquí tu biografía... ¡Cuéntanos cómo juegas!"</p>
+
+            <div class="profile-stats">
+                <div><strong>12</strong><br>Partidos</div>
+                <div><strong>3</strong><br>Favoritas</div>
             </div>
+
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span>Altura</span>
+                    <strong id="val-altura">-- cm</strong>
+                </div>
+                <div class="info-item">
+                    <span>Peso</span>
+                    <strong id="val-peso">-- kg</strong>
+                </div>
+                <div class="info-item">
+                    <span>Posición</span>
+                    <strong id="val-posicion">Alero</strong>
+                </div>
+                <div class="info-item">
+                    <span>Nivel</span>
+                    <strong id="val-nivel">Amateur</strong>
+                </div>
+            </div>
+
+            <button class="btn-edit" onclick="abrirEditor()">Editar Perfil</button>
         </div>
     </div>
+</div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
