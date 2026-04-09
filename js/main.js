@@ -50,6 +50,8 @@ function cargarCanchas(archivo, tipoCancha) {
     });
 }
 
+let userMarker = null;
+
 function buscarUbicacionUser() {
     if (!navigator.geolocation) {
         alert("Lo siento, tu navegador no soporta geolocalización");
@@ -63,14 +65,19 @@ function buscarUbicacionUser() {
 
             map.flyTo([lat, lon], 16);
 
-            L.circleMarker([lat, lon], {
-                radius: 10,
-                fillColor: "#007bff",
-                color: "#fff",
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(map);
+            if (userMarker) {
+                userMarker.setLatLng([lat,lon]);
+            }
+            else {
+                userMarker = L.circleMarker([lat, lon], {
+                    radius: 10,
+                    fillColor: "#007bff",
+                    color: "#fff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+            }
         },
         (error) => {
             console.warn("Error de ubicación:", error);
