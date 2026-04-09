@@ -65,6 +65,7 @@ function buscarUbicacionUser() {
 
             map.flyTo([lat, lon], 16);
 
+            map.once('moveend', () => {
             if (userMarker) {
                 userMarker.setLatLng([lat,lon]);
             }
@@ -78,6 +79,7 @@ function buscarUbicacionUser() {
                     fillOpacity: 0.8
                 }).addTo(map);
             }
+           });
         },
         (error) => {
             console.warn("Error de ubicación:", error);
