@@ -45,7 +45,7 @@ function cargarCanchas(archivo, tipoCancha) {
                                     🏘️ ${pista.BARRIO || "N/A"}
                                 </div>
                                 <a href="${gmapsUrl}" target="_blank" class="btn-routing">🚗 CÓMO LLEGAR</a>
-                                <button class="btn-fav" onclick="toggleFavorito('${nombreLugar.replace(/'/g, "\\'")}')"> 
+                                <button class="btn-fav" onclick="toggleFavorito('${nombreLugar.replace(/'/g, "\\'")}', this)"> 
                                 ${canchasFavoritas.includes(nombreLugar) ? '⭐ Quitar Favorito' : '⭐ Marcar favorito'} 
                                 </button>
                             </div>
