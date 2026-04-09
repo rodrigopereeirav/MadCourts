@@ -70,7 +70,7 @@ function buscarUbicacionUser() {
                 weight: 2,
                 opacity: 1,
                 fillOpacity: 0.8
-            }).addTo(map).bindPopup("¡Estás aquí! 🏀").openPopup();
+            }).addTo(map);
         },
         (error) => {
             console.warn("Error de ubicación:", error);
