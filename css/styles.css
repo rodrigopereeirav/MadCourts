@@ -76,7 +76,7 @@ body, html {
 .ubi-btn {
    position: absolute;
    top: 12px; 
-   right: 50px;
+   right: 70px;
    z-index: 1000;
    background-color: #e65c00;
    color: #fffdfa;
