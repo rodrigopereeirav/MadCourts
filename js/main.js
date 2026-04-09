@@ -50,6 +50,37 @@ function cargarCanchas(archivo, tipoCancha) {
     });
 }
 
+function buscarUbicacionUser() {
+    if (!navigator.geolocation) {
+        alert("Lo siento, tu navegador no soporta geolocalización");
+              return;
+        }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude; 
+
+            map.flyTo([lat, lon], 16);
+
+            L.circleMarker([lat, lon], {
+                radius: 10,
+                fillColor: "#007bff",
+                color: "#fff",
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map).bindPopup("¡Estás aquí! 🏀").openPopup();
+        },
+        (error) => {
+            console.warn("Error de ubicación:", error);
+            alert("No hemos podido acceder a tu ubicación. Asegúrate de dar permiso en el navegador.");
+        },
+        { enableHighAccuracy: true }
+        );
+    }
+        
+
 // Ejecución inicial
 cargarCanchas("data/canchas_basket_madrid.csv", "calle");
 cargarCanchas("data/polideportivos_aptos_saneado.csv", "polis");
