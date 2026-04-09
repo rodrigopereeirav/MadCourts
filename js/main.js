@@ -37,7 +37,7 @@ function cargarCanchas(archivo, tipoCancha) {
                             </div>
                             <div class="popup-body">
                                 <b style="display:block; margin-bottom:10px;">${nombreLugar}</b>
-                                <div style="font-size:0.9em; color:#666;">
+                                <div style="font-size:0.9em; color:#666; margin-bottom:12px;">
                                     📍 ${pista.DISTRITO || "Madrid"}<br>
                                     🏘️ ${pista.BARRIO || "N/A"}
                                 </div>
