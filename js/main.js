@@ -88,6 +88,49 @@ function buscarUbicacionUser() {
         { enableHighAccuracy: true }
         );
     }
+
+// Funciones para el Modal de Perfil
+function abrirEditor() {
+    const modal = document.getElementById('modal-editor');
+    modal.style.display = 'flex';
+
+    // Rellenar el formulario con lo que ya hay en la tarjeta
+    document.getElementById('input-name').value = document.getElementById('user-display-name').innerText;
+    document.getElementById('input-username').value = document.getElementById('user-handle').innerText;
+    document.getElementById('input-bio').value = document.getElementById('user-bio').innerText;
+    document.getElementById('input-altura').value = parseInt(document.getElementById('val-altura').innerText) || "";
+    document.getElementById('input-peso').value = parseInt(document.getElementById('val-peso').innerText) || "";
+    document.getElementById('input-posicion').value = document.getElementById('val-posicion').innerText;
+    document.getElementById('input-nivel').value = document.getElementById('val-nivel').innerText;
+}
+
+function cerrarEditor() {
+    document.getElementById('modal-editor').style.display = 'none';
+}
+
+function guardarPerfil() {
+    // 1. Capturar los nuevos valores
+    const nuevoNombre = document.getElementById('input-name').value;
+    const nuevoUser = document.getElementById('input-username').value;
+    const nuevaBio = document.getElementById('input-bio').value;
+    const nuevaAlt = document.getElementById('input-altura').value;
+    const nuevoPeso = document.getElementById('input-peso').value;
+    const nuevaPos = document.getElementById('input-posicion').value;
+    const nuevoNivel = document.getElementById('input-nivel').value;
+
+    // 2. Actualizar la tarjeta visualmente
+    document.getElementById('user-display-name').innerText = nuevoNombre;
+    document.getElementById('user-handle').innerText = nuevoUser.startsWith('@') ? nuevoUser : '@' + nuevoUser;
+    document.getElementById('user-bio').innerText = `"${nuevaBio}"`;
+    document.getElementById('val-altura').innerText = nuevaAlt + " cm";
+    document.getElementById('val-peso').innerText = nuevoPeso + " kg";
+    document.getElementById('val-posicion').innerText = nuevaPos;
+    document.getElementById('val-nivel').innerText = nuevoNivel;
+
+    // 3. Cerrar y avisar
+    cerrarEditor();
+    console.log("Perfil actualizado localmente");
+}
         
 
 // Ejecución inicial
