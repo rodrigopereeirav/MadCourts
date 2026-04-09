@@ -97,7 +97,7 @@ body, html {
 
 .content-section.active { display: block; }
 
-/* --- PERFIL --- */
+/* --- PERFIL (ESTILO MADCOURTS) --- */
 .profile-container {
     background-color: #faf7f2;
     height: 100vh;
@@ -108,7 +108,7 @@ body, html {
 
 .profile-card {
     background: #fffdfa;
-    padding: 40px;
+    padding: 30px; /* Un poco menos de padding para que quepa todo */
     border-radius: 25px;
     box-shadow: 0 10px 30px rgba(74, 68, 57, 0.1);
     text-align: center;
@@ -122,16 +122,54 @@ body, html {
     width: 100px; height: 100px;
     line-height: 100px;
     border-radius: 50%;
-    margin: 0 auto 20px;
+    margin: 0 auto 15px;
+}
+
+/* Biografía */
+.profile-bio {
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #8c7f6b;
+    margin: 10px 0;
 }
 
 .profile-stats {
     display: flex;
     justify-content: space-around;
-    margin: 25px 0;
+    margin: 20px 0;
     background: #faf7f2;
     padding: 15px;
     border-radius: 15px;
+    border: 1px solid #e0d7c6; /* Para que pegue con la card */
+}
+
+/* --- FICHA TÉCNICA NUEVA --- */
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+    text-align: left; /* Para que las etiquetas se lean mejor */
+}
+
+.info-item {
+    background: #fff;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #f0e9dd;
+}
+
+.info-item span {
+    display: block;
+    font-size: 0.7rem;
+    color: #b0a48e;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.info-item strong {
+    font-size: 0.95rem;
+    color: #4a4439;
 }
 
 .btn-edit {
@@ -143,6 +181,11 @@ body, html {
     cursor: pointer;
     width: 100%;
     font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-edit:hover {
+    background-color: #cf5300;
 }
 
 /* --- POPUPS --- */
