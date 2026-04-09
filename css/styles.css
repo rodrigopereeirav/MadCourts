@@ -73,6 +73,20 @@ body, html {
     box-shadow: 0 4px 10px rgba(230, 92, 0, 0.3);
 }
 
+.ubi-btn {
+   position: absolute;
+   top: 85px; 
+   right: 20px;
+   z-index: 1000;
+   background-color: #e65c00;
+   color: #fffdfa;
+   padding: 10px 15px;
+   border-radius: 50px;
+   border: 2px solid #e0d7c6;
+   cursor: pointer;
+}
+   
+
 .content-section {
     display: none;
     height: 100vh;
