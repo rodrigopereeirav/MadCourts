@@ -1,3 +1,6 @@
+let userMarker = null;
+let canchasFavoritas = []
+
 function showSection(sectionId, event) {
     document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
     document.getElementById(sectionId).classList.add('active');
@@ -42,7 +45,9 @@ function cargarCanchas(archivo, tipoCancha) {
                                     🏘️ ${pista.BARRIO || "N/A"}
                                 </div>
                                 <a href="${gmapsUrl}" target="_blank" class="btn-routing">🚗 CÓMO LLEGAR</a>
-                                <button class="btn-fav" onclick="toggleFavorito('${nombreLugar.replace(/'/g, "\\'")}')"> ⭐ Marcar Favorito </button>
+                                <button class="btn-fav" onclick="toggleFavorito('${nombreLugar.replace(/'/g, "\\'")}')"> 
+                                ${canchasFavoritas.includes(nombreLugar) ? '⭐ Quitar Favorito' : '⭐ Marcar favorito'} 
+                                </button>
                             </div>
                         `);
                 }
@@ -50,8 +55,6 @@ function cargarCanchas(archivo, tipoCancha) {
         }
     });
 }
-
-let userMarker = null;
 
 function buscarUbicacionUser() {
     if (!navigator.geolocation) {
@@ -139,8 +142,6 @@ function guardarPerfil() {
     cerrarEditor();
     console.log("Perfil actualizado localmente");
 }
-
-let canchasFavoritas = []
 
 function toggleFavorito(nombreCancha) {
     console.log("Has marcado como favorita: " + nombreCancha);
