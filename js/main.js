@@ -1,5 +1,6 @@
 let userMarker = null;
 let canchasFavoritas = []
+let todosLosMarcadores = {};
 
 function showSection(sectionId, event) {
     document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
@@ -15,7 +16,7 @@ function cargarCanchas(archivo, tipoCancha) {
     Papa.parse(archivo, {
         download: true, header: true, skipEmptyLines: true, delimiter: ";",
         complete: function(results) {
-            results.data.forEach(function(pista) {
+            results.data.forEach(function(pista, index) {
                 let lat = superLimpieza(pista.LATITUD || pista.latitud, 'lat');
                 let lon = superLimpieza(pista.LONGITUD || pista.longitud, 'lon');
 
@@ -32,8 +33,8 @@ function cargarCanchas(archivo, tipoCancha) {
                     
                     const gmapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
                     
-                    L.circleMarker([lat, lon], markerStyle)
-                        .addTo(tipoCancha === 'polis' ? capaPolis : capaCanchas)
+                    let marcador = L.circleMarker([lat, lon], markerStyle);
+                        marcador.addTo(tipoCancha === 'polis' ? capaPolis : capaCanchas)
                         .bindPopup(`
                             <div class="popup-header ${tipoCancha}">
                                 ${tipoCancha === 'polis' ? '🏟️' : '🏀'} ${tipoCancha === 'polis' ? 'Polideportivo' : 'Cancha Calle'}
@@ -45,11 +46,12 @@ function cargarCanchas(archivo, tipoCancha) {
                                     🏘️ ${pista.BARRIO || "N/A"}
                                 </div>
                                 <a href="${gmapsUrl}" target="_blank" class="btn-routing">🚗 CÓMO LLEGAR</a>
-                                <button class="btn-fav" onclick="toggleFavorito('${nombreLugar.replace(/'/g, "\\'")}', this)"> 
+                                <button class="btn-fav" onclick="toggleFavorito('${nombreLugar.replace(/'/g, "\\'")}', this, ${index})"> 
                                 ${canchasFavoritas.includes(nombreLugar) ? '⭐ Quitar Favorito' : '⭐ Marcar favorito'} 
                                 </button>
                             </div>
                         `);
+                    todosLosMarcadores[index] = marcador;
                 }
             });
         }
