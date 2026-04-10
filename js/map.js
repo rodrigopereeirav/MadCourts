@@ -17,7 +17,8 @@ var capaFavoritos = L.layerGroup();
 // Selector de capas
 var selectores = {
     "<span style='color: #e65c00; font-weight: bold;'>🏀 Canchas Calle</span>": capaCanchas,
-    "<span style='color: #8c7f6b; font-weight: bold;'>🏟️ Polideportivos</span>": capaPolis
+    "<span style='color: #8c7f6b; font-weight: bold;'>🏟️ Polideportivos</span>": capaPolis,
+    "<span style='color: #FFB300; font-weight: bold;'>⭐ Favoritas</span>": capaFavoritos
 };
 
 L.control.layers(null, selectores, { collapsed: true }).addTo(map);
