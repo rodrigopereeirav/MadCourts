@@ -34,6 +34,10 @@ function cargarCanchas(archivo, tipoCancha) {
                     const gmapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
                     
                     let marcador = L.circleMarker([lat, lon], markerStyle);
+
+                    marcador.idCancha = index;
+                    marcador.colorOriginal = markerStyle.fillColor;
+                    
                         marcador.addTo(tipoCancha === 'polis' ? capaPolis : capaCanchas)
                         .bindPopup(`
                             <div class="popup-header ${tipoCancha}">
@@ -145,18 +149,23 @@ function guardarPerfil() {
     console.log("Perfil actualizado localmente");
 }
 
-function toggleFavorito(nombreCancha, elementoBoton) {
+function toggleFavorito(nombreCancha, elementoBoton, idCancha) {
+    
+    let marcador = todosLosMarcadores[idCancha];
+    
     console.log("Has marcado como favorita: " + nombreCancha);
+    
     if (canchasFavoritas.includes(nombreCancha)) {
         canchasFavoritas.splice(canchasFavoritas.indexOf(nombreCancha), 1);
-        alert("⭐ Cancha quitada de favoritos: " + nombreCancha);
         elementoBoton.innerText = "⭐ Marcar Favorito";
+        if(marcador) marcador.setStyle({ fillColor: marcador.colorOriginal, weight: 2 });
         }
     else {
         canchasFavoritas.push(nombreCancha);
-        alert("⭐ Cancha añadida a favoritos: " + nombreCancha);
         elementoBoton.innerText = "⭐ Quitar Favorito";
+        if(marcador) marcador.setStyle({ fillColor: '#FFD700', weight: 4 });
     }    
+    
     document.getElementById('cont-favoritos').innerText = canchasFavoritas.length;
 }
         
