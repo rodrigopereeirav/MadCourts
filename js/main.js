@@ -56,6 +56,19 @@ function cargarCanchas(archivo, tipoCancha) {
                             </div>
                         `);
                     todosLosMarcadores[index] = marcador;
+
+                    marcador.on('popupopen', function() {
+                    // Buscamos el botón dentro del popup que se acaba de abrir
+                    const btn = document.querySelector(`.btn-fav[onclick*="${index}"]`);
+                                if (btn) {
+                                    // Si el nombre ya está en favoritos, ponemos el texto de quitar
+                                    if (canchasFavoritas.includes(nombreLugar)) {
+                                        btn.innerText = "⭐ Quitar Favorito";
+                                    } else {
+                                        btn.innerText = "⭐ Marcar favorito";
+                                    }
+                                }
+                            });
                 }
             });
         }
