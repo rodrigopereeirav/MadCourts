@@ -171,12 +171,12 @@ function toggleFavorito(nombreCancha, elementoBoton, idCancha) {
     if (canchasFavoritas.includes(nombreCancha)) {
         canchasFavoritas.splice(canchasFavoritas.indexOf(nombreCancha), 1);
         elementoBoton.innerText = "⭐ Marcar Favorito";
-        if(marcador) marcador.setStyle({ fillColor: marcador.colorOriginal, weight: 2 });
+        if(marcador) marcador.setStyle({ fillColor: marcador.colorOriginal});
         }
     else {
         canchasFavoritas.push(nombreCancha);
         elementoBoton.innerText = "⭐ Quitar Favorito";
-        if(marcador) marcador.setStyle({ fillColor: '#FFD700', weight: 4 });
+        if(marcador) marcador.setStyle({ fillColor: '#FFD700'});
     }    
     
     document.getElementById('cont-favoritos').innerText = canchasFavoritas.length;
