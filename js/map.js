@@ -12,6 +12,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 // Capas de datos
 var capaCanchas = L.layerGroup().addTo(map);
 var capaPolis = L.layerGroup().addTo(map);
+var capaFavoritos = L.layerGroup();
 
 // Selector de capas
 var selectores = {
